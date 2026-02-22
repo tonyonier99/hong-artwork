@@ -100,9 +100,9 @@
     .content-section {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       padding: 24px 16px;
-      overflow-y: auto;
+      overflow: hidden;
+      /* Prevent the entire section from scrolling */
     }
 
     .artwork-title {
@@ -110,13 +110,29 @@
       font-weight: 700;
       line-height: 1.5;
       margin-bottom: 24px;
+      flex-shrink: 0;
+      /* Keep title fixed */
     }
 
     .artwork-description {
       font-size: 0.92rem;
       font-weight: 300;
       line-height: 2;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
+      overflow-y: auto;
+      /* Scroll only text */
+      flex: 1;
+      /* Take up remaining space */
+      padding-right: 12px;
+      /* Pad for scrollbar */
+    }
+
+    .artwork-description p {
+      margin-bottom: 0.8em;
+    }
+
+    .artwork-description p:last-child {
+      margin-bottom: 0;
     }
 
     /* Audio */
@@ -125,6 +141,8 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 20px 24px;
+      flex-shrink: 0;
+      /* Keep audio fixed */
     }
 
     .audio-player {
@@ -342,9 +360,23 @@
 
     <div class="content-section">
       <!-- ★ 替換標題與描述 -->
-      <h1 class="artwork-title">作品名稱</h1>
+      <h1 class="artwork-title">Who Am I</h1>
       <div class="artwork-description">
-        <p>在此填入作品的文字描述。</p>
+        <p>This piece originates from recordings of sounds I heard after consuming cannabis. At the time, a single
+          sentence echoed incessantly within my mind, its volume fluctuating unpredictably—sometimes loud, sometimes
+          faint, drifting from my left ear to my right.</p>
+        <p>Whenever these auditory hallucinations surfaced, I was plunged into profound unease and self-doubt. To
+          confront this sensation, I resolved to document it. By externalising the sound—transforming it into an actual
+          recording—I could detach myself and observe these noises from a third-person perspective, questioning which
+          sounds were genuinely present and which existed solely within my mind.</p>
+        <p>The fluctuations in sound are visualised through variations in letter case, arrangement, and tonal intensity.
+          Acrylic paint on cardstock was chosen to reflect the spontaneous nature of the creation—these were simply the
+          materials at hand at the time.</p>
+        <p>Headphones are recommended for a more complete auditory experience.</p>
+        <p><strong>Year & Materials</strong></p>
+        <p>2025<br>
+          Acrylic on cardstock<br>
+          41 × 59 cm</p>
       </div>
 
       <div class="audio-section">
