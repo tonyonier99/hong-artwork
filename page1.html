@@ -1,246 +1,459 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>作品展示</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --bg: #ffffff;
-    --text: #222;
-    --text-muted: #888;
-    --accent: #333;
-    --border: #e0e0e0;
-    --light-bg: #f8f8f8;
-  }
-  html, body { height: 100%; font-size: 16px; }
-  body {
-    font-family: 'Noto Sans TC', 'Helvetica Neue', Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.8;
-    -webkit-font-smoothing: antialiased;
-    overflow: hidden;
-  }
-
-  .page-wrapper {
-    width: 100vw;
-    height: 100vh;
-    padding: 32px 36px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    align-items: stretch;
-  }
-
-  /* Image */
-  .image-section {
-    position: relative;
-    overflow: hidden;
-    background: var(--light-bg);
-    border: 1px solid var(--border);
-    cursor: zoom-in;
-  }
-  .image-section img {
-    width: 100%; height: 100%;
-    object-fit: contain;
-    transform-origin: center center;
-    transition: transform 0.3s cubic-bezier(0.25,0.1,0.25,1);
-    user-select: none; -webkit-user-drag: none;
-  }
-  .image-section.zoomed { cursor: grab; }
-  .image-section.zoomed.dragging { cursor: grabbing; }
-  .zoom-hint {
-    position: absolute; bottom: 12px; right: 12px;
-    background: rgba(0,0,0,0.55); color: #fff;
-    font-size: 0.7rem; padding: 5px 12px; border-radius: 3px;
-    letter-spacing: 0.05em; pointer-events: none; transition: opacity 0.4s;
-  }
-  .image-section.zoomed .zoom-hint { opacity: 0; }
-
-  /* Content */
-  .content-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 24px 16px;
-    overflow-y: auto;
-  }
-  .artwork-title {
-    font-size: 1.5rem; font-weight: 700;
-    line-height: 1.5; margin-bottom: 24px;
-  }
-  .artwork-description {
-    font-size: 0.92rem; font-weight: 300;
-    line-height: 2; margin-bottom: 40px;
-  }
-
-  /* Audio */
-  .audio-section {
-    background: var(--light-bg); border: 1px solid var(--border);
-    border-radius: 6px; padding: 20px 24px;
-  }
-  .audio-player { display: flex; align-items: center; gap: 14px; }
-  .play-btn {
-    width: 40px; height: 40px; border-radius: 50%;
-    border: 1.5px solid var(--accent); background: transparent;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: all 0.2s; color: var(--accent);
-  }
-  .play-btn:hover { background: var(--accent); color: #fff; }
-  .play-btn svg { width: 14px; height: 14px; }
-  .progress-area { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-  .progress-bar-wrapper {
-    width: 100%; height: 3px; background: var(--border);
-    border-radius: 3px; cursor: pointer; transition: height 0.15s;
-  }
-  .progress-bar-wrapper:hover { height: 5px; }
-  .progress-fill {
-    height: 100%; background: var(--accent); border-radius: 3px;
-    width: 0%; transition: width 0.1s linear; position: relative;
-  }
-  .progress-fill::after {
-    content: ''; position: absolute; right: -5px; top: 50%;
-    transform: translateY(-50%); width: 10px; height: 10px;
-    border-radius: 50%; background: var(--accent);
-    opacity: 0; transition: opacity 0.2s;
-  }
-  .progress-bar-wrapper:hover .progress-fill::after { opacity: 1; }
-  .time-display {
-    display: flex; justify-content: space-between;
-    font-size: 0.7rem; color: var(--text-muted); font-variant-numeric: tabular-nums;
-  }
-  .volume-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted); padding: 4px; transition: color 0.2s; flex-shrink: 0;
-  }
-  .volume-btn:hover { color: var(--accent); }
-  .volume-btn svg { width: 16px; height: 16px; }
-
-  /* Fullscreen */
-  .fullscreen-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-    z-index: 9999; display: none; align-items: center; justify-content: center;
-    cursor: zoom-out; opacity: 0; transition: opacity 0.3s;
-  }
-  .fullscreen-overlay.active { display: flex; opacity: 1; }
-  .fullscreen-overlay img { max-width: 92vw; max-height: 92vh; object-fit: contain; }
-  .fullscreen-close {
-    position: absolute; top: 20px; right: 24px;
-    width: 36px; height: 36px; border: none;
-    background: rgba(255,255,255,0.15); border-radius: 50%;
-    color: #fff; font-size: 1.1rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: background 0.2s;
-  }
-  .fullscreen-close:hover { background: rgba(255,255,255,0.3); }
-
-  /* RWD */
-  @media (max-width: 800px) {
-    body { overflow: auto; }
-    .page-wrapper {
-      grid-template-columns: 1fr;
-      height: auto; min-height: 100vh;
-      padding: 20px;
-      gap: 24px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作品展示</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .image-section { aspect-ratio: 3/4; }
-    .content-section { padding: 16px 0 40px; }
-    .artwork-title { font-size: 1.25rem; }
-  }
-  @keyframes fadeIn { from{opacity:0;}to{opacity:1;} }
-  .image-section { animation: fadeIn 0.6s ease 0.1s both; }
-  .content-section { animation: fadeIn 0.6s ease 0.25s both; }
-</style>
+
+    :root {
+      --bg: #ffffff;
+      --text: #222;
+      --text-muted: #888;
+      --accent: #333;
+      --border: #e0e0e0;
+      --light-bg: #f8f8f8;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    .page-wrapper {
+      width: 100vw;
+      height: 100vh;
+      padding: 32px 36px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+
+    /* Image */
+    .image-section {
+      position: relative;
+      overflow: hidden;
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      cursor: zoom-in;
+    }
+
+    .image-section img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform-origin: center center;
+      transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .image-section.zoomed {
+      cursor: grab;
+    }
+
+    .image-section.zoomed.dragging {
+      cursor: grabbing;
+    }
+
+    .zoom-hint {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 5px 12px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+
+    .image-section.zoomed .zoom-hint {
+      opacity: 0;
+    }
+
+    /* Content */
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow-y: auto;
+    }
+
+    .artwork-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .artwork-description {
+      font-size: 0.92rem;
+      font-weight: 300;
+      line-height: 2;
+      margin-bottom: 40px;
+    }
+
+    /* Audio */
+    .audio-section {
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 24px;
+    }
+
+    .audio-player {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .play-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      color: var(--accent);
+    }
+
+    .play-btn:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .play-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .progress-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .progress-bar-wrapper {
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: height 0.15s;
+    }
+
+    .progress-bar-wrapper:hover {
+      height: 5px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.1s linear;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .progress-bar-wrapper:hover .progress-fill::after {
+      opacity: 1;
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .volume-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .volume-btn:hover {
+      color: var(--accent);
+    }
+
+    .volume-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Fullscreen */
+    .fullscreen-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .fullscreen-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .fullscreen-overlay img {
+      max-width: 92vw;
+      max-height: 92vh;
+      object-fit: contain;
+    }
+
+    .fullscreen-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .fullscreen-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* RWD */
+    @media (max-width: 800px) {
+      body {
+        overflow: auto;
+      }
+
+      .page-wrapper {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 100vh;
+        padding: 20px;
+        gap: 24px;
+      }
+
+      .image-section {
+        aspect-ratio: 3/4;
+      }
+
+      .content-section {
+        padding: 16px 0 40px;
+      }
+
+      .artwork-title {
+        font-size: 1.25rem;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .image-section {
+      animation: fadeIn 0.6s ease 0.1s both;
+    }
+
+    .content-section {
+      animation: fadeIn 0.6s ease 0.25s both;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="fullscreen-overlay" id="fullscreenOverlay">
-  <button class="fullscreen-close" id="fullscreenClose">&times;</button>
-  <img id="fullscreenImg" src="" alt="">
-</div>
-
-<main class="page-wrapper">
-  <div class="image-section" id="imageContainer">
-    <!-- ★ 替換圖片路徑 -->
-    <img id="artworkImg" src="img1.JPG">
-    <div class="zoom-hint">滾輪放大 ・ 雙擊全螢幕</div>
+  <div class="fullscreen-overlay" id="fullscreenOverlay">
+    <button class="fullscreen-close" id="fullscreenClose">&times;</button>
+    <img id="fullscreenImg" src="" alt="">
   </div>
 
-  <div class="content-section">
-    <!-- ★ 替換標題與描述 -->
-    <h1 class="artwork-title">作品名稱</h1>
-    <div class="artwork-description">
-      <p>在此填入作品的文字描述。</p>
+  <main class="page-wrapper">
+    <div class="image-section" id="imageContainer">
+      <!-- ★ 替換圖片路徑 -->
+      <img id="artworkImg" src="img1.JPG">
+      <div class="zoom-hint">滾輪放大 ・ 雙擊全螢幕</div>
     </div>
 
-    <div class="audio-section">
-      <div class="audio-player">
-        <button class="play-btn" id="playBtn">
-          <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon"><polygon points="6,3 20,12 6,21"/></svg>
-        </button>
-        <div class="progress-area">
-          <div class="progress-bar-wrapper" id="progressBar">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <div class="time-display">
-            <span id="currentTime">0:00</span>
-            <span id="totalTime">0:00</span>
-          </div>
-        </div>
-        <button class="volume-btn" id="volumeBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-        </button>
+    <div class="content-section">
+      <!-- ★ 替換標題與描述 -->
+      <h1 class="artwork-title">One cold shower, please.</h1>
+      <div class="artwork-description">
+        <p>"I really need a cold shower now," he said, standing in front of the bathroom.</p>
+        <br>
+        <p>"What?" The way he linked cold and shower sounded like a completely different phrase in Mandarin—oral sex. I
+          was shocked and had to confirm what he had just said. Only after he repeated himself did I understand, and we
+          both laughed at the misunderstanding.</p>
+        <br>
+        <p>He is a remote marketing practitioner travelling across Asia, originally from London, seeking a country where
+          he might settle for a while. We met in a queue before a rave. I asked the people directly behind me if they
+          wanted to enter together, as one could gain free entry if three people went in together. "Are you the one with
+          free entry?" he asked jokingly. "If you say so," I replied without hesitation, smiling subtly.</p>
+        <br>
+        <p>Inside, I showed him around, and he bought me a drink. The loud music encouraged us to enjoy the atmosphere
+          rather than focus on getting to know each other. Before he left, he asked me to give him a Mandarin name. I
+          wanted it to be meaningful, not just a phonetic translation, so we went to the club's Chinese ink painting
+          workshop to discuss it. I wrote his name on rice paper as a gift, enjoying the tactile control of the brush I
+          brought even while slightly tipsy. He asked for my contact information and left shortly afterward.</p>
+        <br>
+        <p>The following week, we travelled to Hualien in eastern Taiwan. Initially, I did not overthink it. After the
+          trip ended, we parted ways. However, he returned to Taipei after a solo trip in southern Taiwan, and this
+          time, we moved in together.</p>
+        <br>
+        <p>During the three weeks we lived together, we explored Taipei extensively. He pointed out amusing English sign
+          translations and remarked on how gently the Taipei metro sounded. This opened a new perspective for me to
+          rediscover the city after living here for two years. Beyond that, he teased my American English vocabulary. I
+          started to "feel" the subtleties of English rather than merely studying it. His knowledge of London and his
+          playful approach to language made English richer and more beautiful in many ways. I remained deeply drawn to
+          him after he left, and I am glad I recorded his voice beforehand.</p>
+        <br>
+        <p>This painting represents a conversation that actually happened, combining my fascination with him, our
+          journey, and our amusing misunderstandings—including the memorable moment when a simple request for a cold
+          shower became hilariously risqué.</p>
+        <br>
+        <p>For this work, I used the reverse side of Wenzhou rice paper. Its surface of fine, velvety fibres conveys my
+          ambivalent emotions, with tap water from the bathroom used as a base. For the vertical and horizontal solid
+          black areas, I employed Wu-Zhu concentrated ink, which contains a high proportion of natural gum, creating a
+          subtle glimmer reminiscent of metallic surfaces to evoke the texture.</p>
       </div>
-      <!-- ★ 替換音檔路徑 -->
-      <audio id="audioEl" src="audio.mp3" preload="metadata"></audio>
+
+      <div class="audio-section">
+        <div class="audio-player">
+          <button class="play-btn" id="playBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon">
+              <polygon points="6,3 20,12 6,21" />
+            </svg>
+          </button>
+          <div class="progress-area">
+            <div class="progress-bar-wrapper" id="progressBar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-display">
+              <span id="currentTime">0:00</span>
+              <span id="totalTime">0:00</span>
+            </div>
+          </div>
+          <button class="volume-btn" id="volumeBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </button>
+        </div>
+        <!-- ★ 替換音檔路徑 -->
+        <audio id="audioEl" src="audio.mp3" preload="metadata"></audio>
+      </div>
     </div>
-  </div>
-</main>
+  </main>
 
-<script>
-  const container=document.getElementById('imageContainer');
-  const img=document.getElementById('artworkImg');
-  let scale=1,posX=0,posY=0,isDragging=false,startX,startY;
+  <script>
+    const container = document.getElementById('imageContainer');
+    const img = document.getElementById('artworkImg');
+    let scale = 1, posX = 0, posY = 0, isDragging = false, startX, startY;
 
-  container.addEventListener('wheel',(e)=>{e.preventDefault();scale=Math.min(Math.max(1,scale+(e.deltaY>0?-0.15:0.15)),5);if(scale===1){posX=0;posY=0;container.classList.remove('zoomed');}else{container.classList.add('zoomed');}updateTransform();},{passive:false});
-  container.addEventListener('mousedown',(e)=>{if(scale<=1)return;isDragging=true;startX=e.clientX-posX;startY=e.clientY-posY;container.classList.add('dragging');});
-  window.addEventListener('mousemove',(e)=>{if(!isDragging)return;posX=e.clientX-startX;posY=e.clientY-startY;updateTransform();});
-  window.addEventListener('mouseup',()=>{isDragging=false;container.classList.remove('dragging');});
+    container.addEventListener('wheel', (e) => { e.preventDefault(); scale = Math.min(Math.max(1, scale + (e.deltaY > 0 ? -0.15 : 0.15)), 5); if (scale === 1) { posX = 0; posY = 0; container.classList.remove('zoomed'); } else { container.classList.add('zoomed'); } updateTransform(); }, { passive: false });
+    container.addEventListener('mousedown', (e) => { if (scale <= 1) return; isDragging = true; startX = e.clientX - posX; startY = e.clientY - posY; container.classList.add('dragging'); });
+    window.addEventListener('mousemove', (e) => { if (!isDragging) return; posX = e.clientX - startX; posY = e.clientY - startY; updateTransform(); });
+    window.addEventListener('mouseup', () => { isDragging = false; container.classList.remove('dragging'); });
 
-  let lastTouchDist=0;
-  container.addEventListener('touchstart',(e)=>{if(e.touches.length===2){lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}else if(e.touches.length===1&&scale>1){isDragging=true;startX=e.touches[0].clientX-posX;startY=e.touches[0].clientY-posY;}},{passive:true});
-  container.addEventListener('touchmove',(e)=>{if(e.touches.length===2){e.preventDefault();const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);scale=Math.min(Math.max(1,scale+(d-lastTouchDist)*0.01),5);lastTouchDist=d;if(scale===1){posX=0;posY=0;container.classList.remove('zoomed');}else{container.classList.add('zoomed');}updateTransform();}else if(isDragging&&e.touches.length===1){posX=e.touches[0].clientX-startX;posY=e.touches[0].clientY-startY;updateTransform();}},{passive:false});
-  container.addEventListener('touchend',()=>{isDragging=false;});
-  function updateTransform(){img.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`;}
+    let lastTouchDist = 0;
+    container.addEventListener('touchstart', (e) => { if (e.touches.length === 2) { lastTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); } else if (e.touches.length === 1 && scale > 1) { isDragging = true; startX = e.touches[0].clientX - posX; startY = e.touches[0].clientY - posY; } }, { passive: true });
+    container.addEventListener('touchmove', (e) => { if (e.touches.length === 2) { e.preventDefault(); const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); scale = Math.min(Math.max(1, scale + (d - lastTouchDist) * 0.01), 5); lastTouchDist = d; if (scale === 1) { posX = 0; posY = 0; container.classList.remove('zoomed'); } else { container.classList.add('zoomed'); } updateTransform(); } else if (isDragging && e.touches.length === 1) { posX = e.touches[0].clientX - startX; posY = e.touches[0].clientY - startY; updateTransform(); } }, { passive: false });
+    container.addEventListener('touchend', () => { isDragging = false; });
+    function updateTransform() { img.style.transform = `translate(${posX}px,${posY}px) scale(${scale})`; }
 
-  const overlay=document.getElementById('fullscreenOverlay');
-  const fullscreenImg=document.getElementById('fullscreenImg');
-  container.addEventListener('dblclick',()=>{fullscreenImg.src=img.src;overlay.classList.add('active');document.body.style.overflow='hidden';});
-  overlay.addEventListener('click',closeFS);
-  document.getElementById('fullscreenClose').addEventListener('click',closeFS);
-  document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeFS();});
-  function closeFS(){overlay.classList.remove('active');document.body.style.overflow='';}
+    const overlay = document.getElementById('fullscreenOverlay');
+    const fullscreenImg = document.getElementById('fullscreenImg');
+    container.addEventListener('dblclick', () => { fullscreenImg.src = img.src; overlay.classList.add('active'); document.body.style.overflow = 'hidden'; });
+    overlay.addEventListener('click', closeFS);
+    document.getElementById('fullscreenClose').addEventListener('click', closeFS);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFS(); });
+    function closeFS() { overlay.classList.remove('active'); document.body.style.overflow = ''; }
 
-  const audio=document.getElementById('audioEl');
-  const playBtn=document.getElementById('playBtn');
-  const playIcon=document.getElementById('playIcon');
-  const progressFill=document.getElementById('progressFill');
-  const progressBar=document.getElementById('progressBar');
-  const curTime=document.getElementById('currentTime');
-  const totTime=document.getElementById('totalTime');
-  const volBtn=document.getElementById('volumeBtn');
-  let muted=false;
-  playBtn.addEventListener('click',()=>{if(audio.paused)audio.play();else audio.pause();});
-  audio.addEventListener('play',()=>{playIcon.innerHTML='<rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/>';});
-  audio.addEventListener('pause',()=>{playIcon.innerHTML='<polygon points="6,3 20,12 6,21"/>';});
-  audio.addEventListener('loadedmetadata',()=>{totTime.textContent=fmt(audio.duration);});
-  audio.addEventListener('timeupdate',()=>{progressFill.style.width=(audio.currentTime/audio.duration)*100+'%';curTime.textContent=fmt(audio.currentTime);});
-  progressBar.addEventListener('click',(e)=>{const r=progressBar.getBoundingClientRect();audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration;});
-  volBtn.addEventListener('click',()=>{muted=!muted;audio.muted=muted;volBtn.style.opacity=muted?'0.4':'1';});
-  function fmt(s){if(isNaN(s))return'0:00';return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60);}
-</script>
+    const audio = document.getElementById('audioEl');
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const progressFill = document.getElementById('progressFill');
+    const progressBar = document.getElementById('progressBar');
+    const curTime = document.getElementById('currentTime');
+    const totTime = document.getElementById('totalTime');
+    const volBtn = document.getElementById('volumeBtn');
+    let muted = false;
+    playBtn.addEventListener('click', () => { if (audio.paused) audio.play(); else audio.pause(); });
+    audio.addEventListener('play', () => { playIcon.innerHTML = '<rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/>'; });
+    audio.addEventListener('pause', () => { playIcon.innerHTML = '<polygon points="6,3 20,12 6,21"/>'; });
+    audio.addEventListener('loadedmetadata', () => { totTime.textContent = fmt(audio.duration); });
+    audio.addEventListener('timeupdate', () => { progressFill.style.width = (audio.currentTime / audio.duration) * 100 + '%'; curTime.textContent = fmt(audio.currentTime); });
+    progressBar.addEventListener('click', (e) => { const r = progressBar.getBoundingClientRect(); audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration; });
+    volBtn.addEventListener('click', () => { muted = !muted; audio.muted = muted; volBtn.style.opacity = muted ? '0.4' : '1'; });
+    function fmt(s) { if (isNaN(s)) return '0:00'; return Math.floor(s / 60) + ':' + (Math.floor(s % 60) < 10 ? '0' : '') + Math.floor(s % 60); }
+  </script>
 </body>
+
 </html>
